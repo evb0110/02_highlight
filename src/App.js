@@ -18,20 +18,22 @@ function Popular(props) {
   );
 }
 
-function Wrapper({ item }) {
-  if (item.views > 1000) return Popular;
-  if (item.views > 100) return New;
-  return a => a;
-}
-
 function Wrap(Inner) {
   return function(props) {
-    const Outer = Wrapper(props);
-    return Wrapper({ ...props, children: Inner(props) });
+    let Outer;
+    if (props.views > 1000) {
+      Outer = Popular;
+    } 
+    else if (props.views > 100) {
+      Outer = New;
+    }
+    if (Outer) {
+      return Outer({ ...props, children: Inner(props) });
+    } else {
+      return Inner(props);
+    }
   };
 }
-
-const BetterArticle = Wrap(Article);
 
 function Article(props) {
   return (
@@ -43,6 +45,9 @@ function Article(props) {
     </div>
   );
 }
+
+const BetterVideo = Wrap(Video);
+const BetterArticle = Wrap(Article);
 
 function Video(props) {
   return (
@@ -62,10 +67,10 @@ function List(props) {
   return props.list.map(item => {
     switch (item.type) {
       case 'video':
-        return <Video {...item} />;
+        return <BetterVideo {...item} />;
 
       case 'article':
-        return <Article {...item} />;
+        return <BetterArticle {...item} />;
     }
   });
 }
